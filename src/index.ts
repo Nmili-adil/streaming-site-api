@@ -18,7 +18,7 @@ const app = express();
 
 // CORS - allow frontend origin with credentials
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: process.env.CLIENT_URL || 'https://streaming-site-api.vercel.app/' || 'http://localhost:5173',
   credentials: true,
 }));
 
@@ -34,9 +34,6 @@ const limiter = rateLimit({
   message: { message: 'Too many requests, please try again later' },
 });
 app.use('/api', limiter);
-
-// Connect to MongoDB
-connectDB();
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -62,6 +59,12 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+
+const startServer = async () => {
+  await connectDB();
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+};
+
+startServer();
